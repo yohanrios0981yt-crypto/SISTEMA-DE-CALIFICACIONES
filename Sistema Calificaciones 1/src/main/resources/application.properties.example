@@ -1,0 +1,11 @@
+spring.application.name=sistema-calificaciones
+
+spring.datasource.url=jdbc:oracle:thin:@localhost:1521/FREEPDB1
+spring.datasource.username=CALIFICACIONES
+spring.datasource.password=CAMBIA_ESTA_CLAVE
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.open-in-view=false

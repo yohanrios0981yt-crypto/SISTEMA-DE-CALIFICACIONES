@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema de Calificaciones</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-mark">U</span>
+            <span>Universidad <small>Sistema de calificaciones</small></span>
+        </a>
+        <div class="top-actions">
+            <a class="docs-link" href="/swagger-ui.html" target="_blank" rel="noreferrer">Documentación API</a>
+            <button id="logout-button" class="button button-quiet" type="button" hidden>Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section id="access-view" class="access-layout">
+            <div class="intro-card">
+                <p class="eyebrow">PORTAL ACADÉMICO</p>
+                <h1>Tus calificaciones, claras y al día.</h1>
+                <p class="intro-copy">Ingresa para consultar tu avance académico o administrar las notas de tus cursos.</p>
+                <div class="intro-points">
+                    <span><i>✓</i> Acceso por perfil</span>
+                    <span><i>✓</i> Notas organizadas por asignatura</span>
+                    <span><i>✓</i> Registro de evaluaciones</span>
+                </div>
+            </div>
+
+            <div class="access-card">
+                <div class="tabs" role="tablist" aria-label="Acceso al sistema">
+                    <button class="tab active" id="login-tab" type="button" role="tab" aria-selected="true">Iniciar sesión</button>
+                    <button class="tab" id="register-tab" type="button" role="tab" aria-selected="false">Registrarse</button>
+                </div>
+
+                <form id="login-form" class="form-panel">
+                    <h2>Bienvenido</h2>
+                    <p class="muted">Usa tu correo universitario para continuar.</p>
+                    <label for="login-email">Correo electrónico</label>
+                    <input id="login-email" name="correo" type="email" autocomplete="username" placeholder="nombre@universidad.edu" required>
+                    <label for="login-password">Contraseña</label>
+                    <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required>
+                    <button class="button button-primary button-full" type="submit">Entrar al portal</button>
+                </form>
+
+                <form id="register-form" class="form-panel" hidden>
+                    <h2>Crear cuenta de estudiante</h2>
+                    <p class="muted">El registro crea una cuenta de estudiante. Después, un profesor debe matricularte en una asignatura para que puedas recibir notas.</p>
+                    <label for="register-name">Nombre completo</label>
+                    <input id="register-name" name="nombre" type="text" autocomplete="name" placeholder="Tu nombre" required>
+                    <label for="register-email">Correo electrónico</label>
+                    <input id="register-email" name="correo" type="email" autocomplete="email" placeholder="nombre@universidad.edu" required>
+                    <label for="register-password">Contraseña</label>
+                    <input id="register-password" name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required>
+                    <button class="button button-primary button-full" type="submit">Crear cuenta</button>
+                </form>
+
+                <p id="access-message" class="message" role="status" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section id="dashboard-view" hidden>
+            <div class="dashboard-heading">
+                <div>
+                    <p id="role-label" class="eyebrow">PORTAL</p>
+                    <h1 id="welcome-title">Hola</h1>
+                    <p id="welcome-copy" class="muted"></p>
+                </div>
+                <span id="role-badge" class="role-badge"></span>
+            </div>
+
+            <section id="student-panel" class="panel-card" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <h2>Mis calificaciones</h2>
+                        <p class="muted">Consulta tus evaluaciones registradas.</p>
+                    </div>
+                    <button id="refresh-grades" class="button button-secondary" type="button">Actualizar</button>
+                </div>
+                <div id="student-summary" class="summary-strip"></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Asignatura</th><th>Evaluación</th><th>Nota</th><th>Fecha</th></tr></thead>
+                        <tbody id="grades-body"></tbody>
+                    </table>
+                </div>
+                <p id="student-message" class="message" role="status" aria-live="polite"></p>
+            </section>
+
+            <section id="professor-panel" class="panel-card" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <h2>Mis cursos y estudiantes</h2>
+                        <p class="muted">Matricula estudiantes registrados y luego elige una matrícula para ponerles notas.</p>
+                    </div>
+                    <button id="refresh-enrollments" class="button button-secondary" type="button">Actualizar</button>
+                </div>
+                <form id="enroll-form" class="grade-form enrollment-form">
+                    <div>
+                        <p class="eyebrow">MATRÍCULA</p>
+                        <h3>Agregar estudiante a un curso</h3>
+                    </div>
+                    <label>Correo del estudiante
+                        <input id="enroll-email" type="email" placeholder="estudiante@universidad.edu" required>
+                    </label>
+                    <label>Asignatura
+                        <select id="enroll-subject" required>
+                            <option value="">Cargando asignaturas...</option>
+                        </select>
+                    </label>
+                    <button class="button button-primary" type="submit">Matricular</button>
+                </form>
+                <p id="enroll-message" class="message" role="status" aria-live="polite"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Estudiante</th><th>Correo</th><th>Asignatura</th><th>Matrícula</th><th></th></tr></thead>
+                        <tbody id="enrollments-body"></tbody>
+                    </table>
+                </div>
+                <form id="grade-form" class="grade-form" hidden>
+                    <div>
+                        <p class="eyebrow">NUEVA CALIFICACIÓN</p>
+                        <h3 id="selected-enrollment">Matrícula seleccionada</h3>
+                    </div>
+                    <label>Evaluación
+                        <input id="evaluation-name" type="text" maxlength="80" placeholder="Ej. Parcial 2" required>
+                    </label>
+                    <label>Nota (0 a 5)
+                        <input id="grade-value" type="number" min="0" max="5" step="0.01" placeholder="4.25" required>
+                    </label>
+                    <button class="button button-primary" type="submit">Guardar nota</button>
+                </form>
+                <p id="professor-message" class="message" role="status" aria-live="polite"></p>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">Sistema universitario de calificaciones · Proyecto académico</footer>
+</body>
+</html>
